@@ -49,8 +49,8 @@ export default class LedsController {
       "Connection": "keep-alive",
     });
     
-    Event.on("Led", (led) => {
-      stream.write(`event: Led\ndata: ${JSON.stringify(led)}\n\n`);
+    Event.on("Led", () => {
+      stream.write(`event: Led\n`);
       console.log('Se actualizo el estado del led');
     });  
    

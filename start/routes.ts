@@ -19,6 +19,7 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import LedsController from 'App/Controllers/Http/LedsController'
 
 Route.get('/', async () => {
   return { hello: 'world' }
@@ -30,3 +31,12 @@ Route.group(() => {
   Route.get('/validarnumero/:url', 'UsersController.numerodeverificacionmovil').as('validarnumero');
   Route.post('/validaCode','UsersController.registrarsms')
 })
+
+Route.group(() => {
+  Route.post('/led/encender/:id', 'LedsController.encenderled')
+  Route.post('/led/apagar/:id', 'LedsController.apagarled')
+  Route.get('led/status/:id', 'LedsController.getStatus')
+  Route.put('led/update/:id', 'LedsController.updateStatus')
+  Route.get('/led/stream', 'LedsController.streamLed');
+}
+)

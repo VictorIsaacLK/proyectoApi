@@ -27,15 +27,18 @@ export default class UsersController {
 
   public async registrar({ request, response }: HttpContext) {
     const validationSchema = schema.create({
-      name: schema.string({ trim: true, escape: true }, [rules.required(), rules.maxLength(255)]),
-      email: schema.string({ trim: true, escape: true }, [
+      nombre_completo: schema.string({ trim: true, escape: true }, [
         rules.required(),
-        rules.minLength(3),
+        rules.maxLength(255),
+      ]),
+      correo: schema.string({ trim: true, escape: true }, [
+        rules.required(),
+        rules.minLength(8),
         rules.maxLength(255),
         rules.email(),
         rules.unique({ table: 'users', column: 'email' }),
       ]),
-      password: schema.string({}, [rules.required(), rules.minLength(8)]),
+      contraseña: schema.string({}, [rules.required(), rules.minLength(8)]),
 
       telefono: schema.string([
         rules.required(),
@@ -48,32 +51,27 @@ export default class UsersController {
       const data = await request.validate({
         schema: validationSchema,
         messages: {
-          'name.required': 'El nombre es requerido',
-          'name.string': 'El nombre debe ser un texto',
-          'name.minLength': 'El nombre debe tener al menos 3 caracteres',
-          'name.maxLength': 'El nombre debe tener como máximo 50 caracteres',
-          'email.required': 'El email es requerido',
-          'email.string': 'El email debe ser un texto',
-          'email.email': 'El email debe ser un email válido',
-          'email.unique': 'El email ya está en uso',
-
-          'password.required': 'La contraseña es requerida',
-          'password.string': 'La contraseña debe ser un texto',
-          'password.minLength': 'La contraseña debe tener al menos 8 caracteres',
-          'password.maxLength': 'La contraseña debe tener como máximo 50 caracteres',
-
-          'telefono.required': 'El teléfono es requerido',
-          'telefono.minLength': 'Debe tener al menos 10 caracteres',
-          'telefono.maxLength': 'Debe tener como máximo 10 caracteres',
-          'telefono.unique': 'El teléfono ya está en uso',
+          'nombre_completo.required': 'El nombre es requerido',
+          'nombre_completo.maxLength': 'El nombre no puede tener mas de 255 caracteres',
+          'correo.required': 'El correo es requerido',
+          'correo.minLength': 'El correo no puede tener menos de 3 caracteres',
+          'correo.maxLength': 'El correo no puede tener mas de 255 caracteres',
+          'correo.email': 'El correo no es valido',
+          'correo.unique': 'El correo ya esta registrado',
+          'contraseña.required': 'La contraseña es requerida',
+          'contraseña.minLength': 'La contraseña no puede tener menos de 8 caracteres',
+          'telefono.required': 'El telefono es requerido',
+          'telefono.unique': 'El telefono ya esta registrado',
+          'telefono.minLength': 'El telefono no puede tener menos de 10 caracteres',
+          'telefono.maxLength': 'El telefono no puede tener mas de 10 caracteres',
         },
       })
       const numeroAleatorio = Math.round(Math.random() * (9000 - 5000) + 5000)
-      const { name, email, password, telefono } = data
+      const { nombre_completo, correo, contraseña, telefono } = data
       const user = new User()
-      user.name = name
-      user.email = email
-      user.password = await Hash.make(password)
+      user.nombre_completo = nombre_completo
+      user.correo = correo
+      user.contraseña = await Hash.make(contraseña)
       user.telefono = telefono
       user.no_verificacion = numeroAleatorio
       await user.save()
@@ -98,8 +96,8 @@ export default class UsersController {
 
       return response.status(201).json({
         message: 'Usuario registrado correctamente',
-        user: user,
-        email: user.email,
+        usuario: user,
+        correo: user.correo,
       })
     } catch (error) {
       console.error(error)
@@ -155,7 +153,7 @@ export default class UsersController {
 
       const user = await User.findByOrFail('email', email)
 
-      const isPasswordValid = await Hash.verify(user.password, password)
+      const isPasswordValid = await Hash.verify(user.contraseña, password)
       if (!isPasswordValid) {
         return response.status(400).json({
           message: 'Email o contraseña incorrectos',
@@ -232,27 +230,6 @@ export default class UsersController {
       return response.status(401).json({ message: 'Usuario no autenticado' })
     }
   }
-  public async updateRole({ auth, params, request, response }) {
-    const user = await User.findOrFail(params.id)
-
-    if (!auth.user) {
-      return response.status(401).json({ message: 'Usuario no autenticado' })
-    }
-    if (auth.user.rol_id !== 1) {
-      return response.status(403).json({
-        message: 'No tienes permisos para actualizar roles de usuario',
-      })
-    }
-    const rol_id = request.input('rol_id')
-    if (!rol_id) {
-      return response.status(422).json({ message: 'El campo rol_id es requerido' })
-    }
-
-    user.rol_id = rol_id
-    await user.save()
-
-    return response.status(200).json({ message: 'Rol actualizado correctamente' })
-  }
 
   public async updateStatus({ request, response, params }) {
     const { id } = params
@@ -278,24 +255,5 @@ export default class UsersController {
         message: 'Ocurrió un error al eliminar el usuario',
       })
     }
-  }
-  public async updateUser({ request, response, params, auth }) {
-    const { id } = params
-    const user = await User.findOrFail(id)
-
-    const loggedInUserId = auth.user.id
-    if (loggedInUserId === user.id) {
-      return response.status(400).json({
-        message: 'No se puede actualizar el propio perfil.',
-      })
-    }
-    user.rol_id = request.input('rol_id')
-    user.status = request.input('status')
-    await user.save()
-
-    return response.status(200).json({
-      message: 'Usuario actualizado correctamente',
-      user,
-    })
   }
 }

@@ -1,7 +1,7 @@
 import { Request } from '@adonisjs/core/build/standalone'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Database from '@ioc:Adonis/Lucid/Database'
-import Event from '@ioc:Adonis/Core/Event';
+import Event from '@ioc:Adonis/Core/Event'
 
 import Led from 'App/Models/Led'
 
@@ -36,24 +36,22 @@ export default class LedsController {
     }
 
     await led?.save()
-    Event.emit('Led', led);
+    Event.emit('Led', led)
 
     response.json({ status: led?.status })
   }
-  public async streamLed({ response }){
-    const stream = response.response;
+  public async streamLed({ response }) {
+    const stream = response.response
     stream.writeHead(200, {
-      "Access-Control-Allow-Origin":"*",
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      "Connection": "keep-alive",
-    });
-    
-    Event.on("Led", () => {
-      stream.write(`event: Led\n`);
-      console.log('Se actualizo el estado del led');
-    });  
-   
-   
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    })
+
+    Event.on('Led', () => {
+      stream.write(`event: Led\n`)
+      console.log('Se actualizo el estado del led')
+    })
   }
 }

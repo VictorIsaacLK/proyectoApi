@@ -19,7 +19,6 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
-import LedsController from 'App/Controllers/Http/LedsController'
 
 Route.get('/', async () => {
   return { hello: 'world' }

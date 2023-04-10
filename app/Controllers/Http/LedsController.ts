@@ -1,6 +1,4 @@
-import { Request } from '@adonisjs/core/build/standalone'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import Database from '@ioc:Adonis/Lucid/Database'
 import Event from '@ioc:Adonis/Core/Event'
 
 import Led from 'App/Models/Led'
@@ -49,8 +47,8 @@ export default class LedsController {
       'Connection': 'keep-alive',
     })
 
-    Event.on('Led', () => {
-      stream.write(`event: Led\n`)
+    Event.on('Led', (led) => {
+      stream.write(`data: ${JSON.stringify(led)}\n\n`)
       console.log('Se actualizo el estado del led')
     })
   }

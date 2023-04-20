@@ -15,7 +15,7 @@ export default class UsersController {
     console.log(numeroiddelaurl)
 
     const user = await Database.from('users').where('id', numeroiddelaurl).first()
-    const correo = user.email
+    const correo = user.correo
 
     await new VerifyEmail2(user).sendLater()
 
@@ -36,9 +36,9 @@ export default class UsersController {
         rules.minLength(8),
         rules.maxLength(255),
         rules.email(),
-        rules.unique({ table: 'users', column: 'email' }),
+        rules.unique({ table: 'users', column: 'correo' }),
       ]),
-      contraseña: schema.string({}, [rules.required(), rules.minLength(8)]),
+      password: schema.string({}, [rules.required(), rules.minLength(8)]),
 
       telefono: schema.string([
         rules.required(),
@@ -67,11 +67,11 @@ export default class UsersController {
         },
       })
       const numeroAleatorio = Math.round(Math.random() * (9000 - 5000) + 5000)
-      const { nombre_completo, correo, contraseña, telefono } = data
+      const { nombre_completo, correo, password, telefono } = data
       const user = new User()
       user.nombre_completo = nombre_completo
       user.correo = correo
-      user.contraseña = await Hash.make(contraseña)
+      user.password = await Hash.make(password)
       user.telefono = telefono
       user.no_verificacion = numeroAleatorio
       await user.save()
@@ -136,14 +136,14 @@ export default class UsersController {
   }
   public async login({ request, response, auth }: HttpContextContract) {
     try {
-      const { email, password } = await request.validate({
+      const { correo, password } = await request.validate({
         schema: schema.create({
-          email: schema.string({}, [rules.required(), rules.email()]),
+          correo: schema.string({}, [rules.required(), rules.email()]),
           password: schema.string({}, [rules.required(), rules.minLength(8), rules.maxLength(180)]),
         }),
         messages: {
-          'email.required': 'El email es requerido',
-          'email.email': 'El email debe ser un email válido',
+          'correo.required': 'El email es requerido',
+          'correo.email': 'El email debe ser un email válido',
 
           'password.required': 'La contraseña es requerida',
           'password.minLength': 'La contraseña debe tener al menos 8 caracteres',
@@ -151,9 +151,9 @@ export default class UsersController {
         },
       })
 
-      const user = await User.findByOrFail('email', email)
+      const user = await User.findByOrFail('correo', correo)
 
-      const isPasswordValid = await Hash.verify(user.contraseña, password)
+      const isPasswordValid = await Hash.verify(user.password, password)
       if (!isPasswordValid) {
         return response.status(400).json({
           message: 'Email o contraseña incorrectos',
@@ -172,7 +172,6 @@ export default class UsersController {
       return response.status(200).json({
         message: 'Inicio de sesión exitoso',
         user: user,
-
         token: token.token,
       })
     } catch (error) {

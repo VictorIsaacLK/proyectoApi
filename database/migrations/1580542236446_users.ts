@@ -8,7 +8,7 @@ export default class extends BaseSchema {
       table.increments('id').primary()
       table.string('nombre_completo',80 ).notNullable()
       table.string('correo', 255).notNullable().unique()
-      table.string('contraseña', 180).notNullable()
+      table.string('password', 180).notNullable()
       table.string('telefono', 10).notNullable().unique()
       table.integer('status').notNullable().defaultTo(0)
       table.string('no_verificacion').nullable()  

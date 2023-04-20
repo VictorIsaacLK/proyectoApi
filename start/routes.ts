@@ -41,3 +41,11 @@ Route.group(() => {
   Route.get('/led/stream', 'LedsController.streamLed');
 }
 )
+
+Route.group(() => {
+  Route.post('/parque/create', 'ParquesController.create')
+  Route.get('/parque/list', 'ParquesController.list')
+  Route.get('/parque/:id', 'ParquesController.info')
+  Route.put('/parque/update/:id', 'ParquesController.update')
+})
+

@@ -5,8 +5,9 @@
     <title>Bienvenido/a</title>
   </head>
   <body>
-    <h1>Bienvenido, {{ user.name }}!</h1>
+    <h1>Bienvenido, {{ user.nombre }}!</h1>
     <p>Favor de darle click al link para mandarte tu codigo de verificacion a tu móbil registrado</p>
+    <p>{{user.no_verificacion}}<p>
     <a href="{{ url }}">Click</a>
   </body>
 </html>

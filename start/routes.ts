@@ -27,8 +27,10 @@ Route.get('/', async () => {
 Route.group(() => {
   Route.post('/registrar', 'UsersController.registrar')
   Route.post('/login', 'UsersController.login')
+  Route.get('/user/:id', 'UsersController.info')
   Route.get('/validarnumero/:url', 'UsersController.numerodeverificacionmovil').as('validarnumero');
   Route.post('/validaCode','UsersController.registrarsms')
+  
 })
 
 Route.group(() => {

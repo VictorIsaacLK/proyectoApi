@@ -12,7 +12,7 @@ export default class User extends BaseModel {
   public correo: string
 
   @column()
-  public contraseña: string
+  public password: string
 
   @column()
   public telefono: string

@@ -39,16 +39,18 @@ Route.group(() => {
   Route.get('led/status/:id', 'LedsController.getStatus')
   Route.put('led/update/:id', 'LedsController.updateStatus')
   Route.get('/led/stream', 'LedsController.streamLed');
-
-}
-
-)
+})
 
 Route.group(() => {
   Route.post('/parque/create', 'ParquesController.create')
-  Route.get('/parque/list', 'ParquesController.list')
-  Route.get('/parque/:id', 'ParquesController.info')
   Route.put('/parque/update/:id', 'ParquesController.update');
-
+  Route.delete('/parque/delete/:id', 'ParquesController.delete');
+  Route.get('/parques', 'ParquesController.parquebyuser');
 }).middleware('auth')
+
+Route.get('/user/info', 'UsersController.obtenerUsuario')
+
+Route.get('/sensores', 'SensoresController.getLastSensorValues')
+  
+
 

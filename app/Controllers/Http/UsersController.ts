@@ -129,7 +129,7 @@ export default class UsersController {
         .where('no_verificacion', data.codigo)
         .update({ status: 1, id: user.id })
 
-      return response.status(200).json({ message: 'Usuario actualizado correctamente' })
+      return response.status(200).json({ message: 'Usuario actualizado correctamente'})
     } else {
       return response.status(404).json({ message: 'Usuario no encontrado' })
     }
@@ -155,15 +155,9 @@ export default class UsersController {
 
       const isPasswordValid = await Hash.verify(user.password, password)
       if (!isPasswordValid) {
-        return response.status(400).json({
-          message: 'Email o contraseña incorrectos',
-          data: null,
-        })
-      }
-      if (user.status == 0) {
-        return response.status(400).json({
-          message: 'Usuario no verificado',
-          data: null,
+        return response.status(401).json({
+          response: 'error',
+          error: 'Email o contraseña incorrectos',
         })
       }
 
@@ -253,6 +247,14 @@ export default class UsersController {
       return response.status(500).json({
         message: 'Ocurrió un error al eliminar el usuario',
       })
+    }
+  }
+  public async obtenerUsuario({ auth, response }) {
+    try {
+      const user = await auth.authenticate()
+      return response.json({ nombre: user.nombre_completo, correo:user.correo,telefono: user.telefono })
+    } catch (error) {
+      return response.status(401).json({ message: 'Usuario no autenticado' })
     }
   }
 }

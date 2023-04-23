@@ -36,7 +36,7 @@ export default class SensoresController {
   
       Event.emit('SensoresActualizados', aggregationResult);
   
-      return response.json(aggregationResult);
+      return response.json({data: aggregationResult});
     } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Error interno del servidor' });

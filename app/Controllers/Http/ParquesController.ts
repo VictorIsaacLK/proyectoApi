@@ -40,7 +40,7 @@ export default class ParquesController {
       const user = auth.user!
       const parque = new Parque()
       parque.nombre = nombre
-      parque.user_id = user.id
+      parque.user_id = auth.user.id
       parque.medidas = medidas
       parque.ubicacion = ubicacion
       parque.telefono = telefono
@@ -144,15 +144,23 @@ export default class ParquesController {
       })
     }
     else{
-      return response.status(200).json({
-        status: 200,
-        msg: 'Parques encontrados',
-        error: null,
-        data: parque,
-      })
+      return response.status(200).json(parque)
     }
+  }
+  public async getParque ({ response, params }: HttpContextContract) {
+    const parque = await Parque.find(params.id)
+    if (parque) {
+      return response.status(200).json(parque)
+    }
+    return response.status(404).json({
+      status: 404,
+      msg: 'Parque no encontrado',
+      error: null,
+      data: null,
+    })
+  }
 
 
-}}
+}
 
 

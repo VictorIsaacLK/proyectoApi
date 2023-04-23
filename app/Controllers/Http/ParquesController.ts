@@ -40,7 +40,7 @@ export default class ParquesController {
       const user = auth.user!
       const parque = new Parque()
       parque.nombre = nombre
-      parque.user_id = auth.user.id
+      parque.user_id = auth.user!.id
       parque.medidas = medidas
       parque.ubicacion = ubicacion
       parque.telefono = telefono

@@ -23,6 +23,7 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.get('/', async () => {
   return { hello: 'world' }
 })
+Route.get('/users/info', 'UsersController.getUserToken')
 
 Route.get('/verifyToken', ({ response }) => {return response.json({ message: 'Token válido' })}).middleware(['auth'])
 
@@ -53,7 +54,7 @@ Route.group(() => {
   Route.get('/parque/:id', 'ParquesController.getParque');
 }).middleware('auth')
 
-Route.get('/user/info', 'UsersController.obtenerUsuario').middleware('auth')
+
 
 Route.get('/sensores', 'SensoresController.getLastSensorValues')
 

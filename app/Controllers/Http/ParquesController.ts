@@ -144,13 +144,14 @@ export default class ParquesController {
       })
     }
     else{
-      return response.status(200).json(parque)
+      return response.status(200).json({
+        data: parque})
     }
   }
   public async getParque ({ response, params }: HttpContextContract) {
     const parque = await Parque.find(params.id)
     if (parque) {
-      return response.status(200).json(parque)
+      return response.status(200).json({parque})
     }
     return response.status(404).json({
       status: 404,

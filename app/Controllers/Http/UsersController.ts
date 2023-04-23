@@ -249,12 +249,16 @@ export default class UsersController {
       })
     }
   }
-  public async obtenerUsuario({ auth, response }) {
+
+ public async getUserToken({ auth, response }) {
     try {
       const user = await auth.authenticate()
-      return response.json({ nombre: user.nombre_completo, correo:user.correo,telefono: user.telefono })
+      return response.json({ nombre: user.nombre_completo, correo: user.correo, telefono: user.telefono })
     } catch (error) {
       return response.status(401).json({ message: 'Usuario no autenticado' })
     }
   }
+  
+  
 }
+

@@ -56,7 +56,11 @@ Route.group(() => {
 
 
 
-Route.get('/sensores', 'SensoresController.getLastSensorValues')
+
+
+Route.get('/sensor/stream', 'SensoresController.streamSensorValues');
+Route.get('/sensores/info', 'SensoresController.obtenerValores');
+
 
 
 

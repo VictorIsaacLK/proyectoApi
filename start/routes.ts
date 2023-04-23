@@ -24,12 +24,16 @@ Route.get('/', async () => {
   return { hello: 'world' }
 })
 
+Route.get('/verifyToken', ({ response }) => {return response.json({ message: 'Token válido' })}).middleware(['auth'])
+
 Route.group(() => {
   Route.post('/registrar', 'UsersController.registrar')
   Route.post('/login', 'UsersController.login')
+  Route.delete('/user/logout', 'UsersController.logout').middleware('auth')
   Route.get('/user/:id', 'UsersController.info')
   Route.get('/validarnumero/:url', 'UsersController.numerodeverificacionmovil').as('validarnumero');
   Route.post('/validaCode','UsersController.registrarsms')
+
   
 })
 
@@ -46,11 +50,13 @@ Route.group(() => {
   Route.put('/parque/update/:id', 'ParquesController.update');
   Route.delete('/parque/delete/:id', 'ParquesController.delete');
   Route.get('/parques', 'ParquesController.parquebyuser');
+  Route.get('/parque/:id', 'ParquesController.getParque');
 }).middleware('auth')
 
-Route.get('/user/info', 'UsersController.obtenerUsuario')
+Route.get('/user/info', 'UsersController.obtenerUsuario').middleware('auth')
 
 Route.get('/sensores', 'SensoresController.getLastSensorValues')
-  
+
+
 
 

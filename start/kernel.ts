@@ -38,6 +38,13 @@ Server.middleware.register([() => import('@ioc:Adonis/Core/BodyParser')])
 | Route.get('dashboard', 'UserController.dashboard').middleware('auth')
 |
 */
+
+const globalMiddleware = [
+    // otros middlewares
+    'Adonis/Middleware/Cors'
+  ];
+  
 Server.middleware.registerNamed({
     auth: () => import('App/Middleware/Auth')
+
 })

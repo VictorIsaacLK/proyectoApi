@@ -9,6 +9,69 @@ export default class SensoresController {
     client = new MongoClient(this.url);
     dbName = 'VIDA';
 
+    
+   public async streamSensorValues({ response }) {
+      const stream = response.response
+      stream.writeHead(200, {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      })
+    
+       
+    try {
+      const client = await MongoClient.connect(this.url)
+      const db = client.db(this.dbName)
+      const collection = db.collection('sensoresValue')
+
+      const changeStream = collection.watch()
+
+      
+      changeStream.on('change', (change) => {
+        console.log('Change:', change)
+
+        Event.on('SensoresActualizados', (stream) => {
+          stream.write(`data: ${JSON.stringify(stream)}\n\n`)
+        })
+      })
+   
+    } catch (error) {
+      console.log('Error:', error)
+    }
+  }
+    
+    
+    public async obtenerValoresSens({ response }: HttpContextContract) {
+      try {
+        const client = await MongoClient.connect(this.url);
+        const db = client.db(this.dbName);
+        const collection = db.collection('sensoresValue');
+    
+        const aggregationPipeline = [
+          { $sort: { fecha: -1 } },
+          {
+            $group: {
+              _id: "$Sensor.Clave",
+              sensor: { $first: "$Sensor" },
+              value: { $last: "$Value" },
+              fecha: { $last: "$Fecha" },
+            },
+          },
+          { $sort: { _id:-1 } }
+        ];
+    
+        const aggregationResult = await collection.aggregate(aggregationPipeline).toArray();
+    
+        return response.json(aggregationResult);
+      } catch (error) {
+        console.log(error);
+        return response.status(500).json({ msg: 'Error en conexion con MongoDB' });
+      }
+    }
+    
+    
+    
 
   public async obtenerValores({ response }: HttpContextContract) {
     try {
@@ -20,14 +83,13 @@ export default class SensoresController {
         { $sort: { fecha: -1 } },
         {
           $group: {
-            _id: "$_id",
+            _id: "$Sensor.Clave",
             sensor: { $first: "$Sensor" },
             value: { $first: "$Value" },
             fecha: { $first: "$Fecha" },
           },
         },
-        { $sort: { fecha: -1 } },
-        { $limit: 5 },
+        { $sort: { fecha: -1 } }
       ];
   
       const aggregationResult = await collection.aggregate(aggregationPipeline).toArray();
@@ -43,19 +105,7 @@ export default class SensoresController {
     }
   }
   
-  public async streamSensorValues({ response}) {
-    const stream = response.response
-    stream.writeHead(200, {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-    })
-  
-    Event.on('SensoresActualizados', (sensores) => {
-      stream.write(`data: ${JSON.stringify(sensores)}\n\n`)
-      console.log('Datos de sensores actualizados')
-    })
-  }
-  
+
+
+
 }

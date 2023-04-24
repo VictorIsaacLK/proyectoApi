@@ -11,15 +11,16 @@ export default class ParquesController {
       nombre: schema.string({ trim: true, escape: true }, [rules.required(), rules.maxLength(255)]),
       medidas: schema.string({ trim: true, escape: true }, [
         rules.required(),
-        rules.maxLength(255),
+        rules.maxLength(30),
       ]),
       ubicacion: schema.string({ trim: true, escape: true }, [
         rules.required(),
-        rules.maxLength(255),
+        rules.maxLength(30),
       ]),
       telefono: schema.string({ trim: true, escape: true }, [
         rules.required(),
-        rules.maxLength(255),
+        rules.minLength(10),
+        rules.maxLength(10),
       ]),
     })
     try {
@@ -27,13 +28,14 @@ export default class ParquesController {
         schema: validationSchema,
         messages: {
           'nombre.required': 'El nombre es requerido',
-          'nombre.maxLength': 'El nombre no puede tener mas de 255 caracteres',
+          'nombre.maxLength': 'El nombre no puede tener mas de 30 caracteres',
           'medidas.required': 'Las medidas son requeridas',
-          'medidas.maxLength': 'Las medidas no pueden tener mas de 255 caracteres',
+          'medidas.maxLength': 'Las medidas no pueden tener mas de 30 caracteres',
           'ubicacion.required': 'La ubicacion es requerida',
-          'ubicacion.maxLength': 'La ubicacion no puede tener mas de 255 caracteres',
+          'ubicacion.maxLength': 'La ubicacion no puede tener mas de 30 caracteres',
           'telefono.required': 'El telefono es requerido',
-          'telefono.maxLength': 'El telefono no puede tener mas de 255 caracteres',
+          'telefono.maxLength': 'El telefono no puede tener mas de 10 caracteres',
+          'telefono.minLength': 'El telefono no puede tener menos de 10 caracteres',
         },
       })
       const { nombre, medidas, ubicacion, telefono } = data
@@ -63,19 +65,20 @@ export default class ParquesController {
       const validationSchema = schema.create({
         nombre: schema.string({ trim: true, escape: true }, [
           rules.required(),
-          rules.maxLength(255),
+          rules.maxLength(30),
         ]),
         medidas: schema.string({ trim: true, escape: true }, [
           rules.required(),
-          rules.maxLength(255),
+          rules.maxLength(30),
         ]),
         ubicacion: schema.string({ trim: true, escape: true }, [
           rules.required(),
-          rules.maxLength(255),
+          rules.maxLength(30),
         ]),
         telefono: schema.string({ trim: true, escape: true }, [
           rules.required(),
-          rules.maxLength(255),
+          rules.maxLength(10),
+          rules.minLength(10),
         ]),
       })
       try {
@@ -83,13 +86,14 @@ export default class ParquesController {
           schema: validationSchema,
           messages: {
             'nombre.required': 'El nombre es requerido',
-            'nombre.maxLength': 'El nombre no puede tener mas de 255 caracteres',
+            'nombre.maxLength': 'El nombre no puede tener mas de 30 caracteres',
             'medidas.required': 'Las medidas son requeridas',
-            'medidas.maxLength': 'Las medidas no pueden tener mas de 255 caracteres',
+            'medidas.maxLength': 'Las medidas no pueden tener mas de 30 caracteres',
             'ubicacion.required': 'La ubicacion es requerida',
-            'ubicacion.maxLength': 'La ubicacion no puede tener mas de 255 caracteres',
+            'ubicacion.maxLength': 'La ubicacion no puede tener mas de 30 caracteres',
             'telefono.required': 'El telefono es requerido',
-            'telefono.maxLength': 'El telefono no puede tener mas de 255 caracteres',
+            'telefono.maxLength': 'El telefono no puede tener mas de 10 caracteres',
+            'telefono.minLength': 'El telefono no puede tener menos de 10 caracteres',
           },
         })
         const parque = await Parque.findOrFail(params.id)
@@ -151,7 +155,7 @@ export default class ParquesController {
   public async getParque ({ response, params }: HttpContextContract) {
     const parque = await Parque.find(params.id)
     if (parque) {
-      return response.status(200).json({parque})
+      return response.status(200).json(parque)
     }
     return response.status(404).json({
       status: 404,
@@ -160,6 +164,23 @@ export default class ParquesController {
       data: null,
     })
   }
+   
+ public async getParquebyUser({ response, auth }: HttpContextContract) {
+  const user = auth.user!
+  const parque = await Database.query().select('*').from('parques').where('user_id', user.id)
+
+  if (!parque) {
+    return response.status(404).json({
+      status: 404,
+      msg: 'Parque no encontrado',
+      error: null,
+      data: null,
+    })
+  }
+  else{
+    return response.status(200).json(parque)
+  }
+}
 
 
 }

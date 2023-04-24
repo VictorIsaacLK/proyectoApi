@@ -51,11 +51,20 @@ Route.group(() => {
   Route.put('/parque/update/:id', 'ParquesController.update');
   Route.delete('/parque/delete/:id', 'ParquesController.delete');
   Route.get('/parques', 'ParquesController.parquebyuser');
+  Route.get('/parque/info', 'ParquesController.getParquebyUser')
   Route.get('/parque/:id', 'ParquesController.getParque');
 }).middleware('auth')
 
-Route.get('/sensor/stream', 'SensoresController.streamSensorValues');
+Route.group(() => {
 Route.get('/sensores/info', 'SensoresController.obtenerValores');
+Route.get('/sensores', 'SensoresController.obtenerValoresSens');
+}).middleware('auth')
+
+
+
+Route.get('/sensor/stream', 'SensoresController.streamSensorValues');
+
+
 
 
 

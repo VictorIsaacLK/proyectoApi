@@ -75,11 +75,11 @@ export default class UsersController {
       user.telefono = telefono
       user.no_verificacion = numeroAleatorio
       await user.save()
-      const HOST = process.env.HOST
+      const HOSTCORREO = process.env.HOST
       const PORT = process.env.PORT
       const url =
         'http://' +
-        HOST +
+        HOSTCORREO +
         ':' +
         PORT +
         Route.makeSignedUrl(
@@ -259,8 +259,8 @@ export default class UsersController {
     }
   }
 
-  
-  
-  
+
+
+
 }
 

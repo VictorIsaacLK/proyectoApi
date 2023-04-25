@@ -44,7 +44,7 @@ const corsConfig: CorsConfig = {
   |                     one of the above values.
   |
   */
-  origin: 'https://www.treevyda.lat', // Allow all origins
+  origin: '*', // Allow all origins
 
   /*
   |--------------------------------------------------------------------------

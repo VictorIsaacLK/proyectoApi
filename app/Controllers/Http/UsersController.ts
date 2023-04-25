@@ -78,7 +78,7 @@ export default class UsersController {
       const HOSTCORREO = process.env.HOSTCORREO
       const PORT = process.env.PORT
       const url =
-        'https://' +
+        'http://' +
         HOSTCORREO +
         ':' +
         PORT +

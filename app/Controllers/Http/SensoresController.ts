@@ -132,7 +132,7 @@ export default class SensoresController {
   
       Event.emit('SensoresActualizados', aggregationResult);
   
-      return response.json(aggregationResult);
+      return response.json({data:aggregationResult});
     } catch (error) {
       try {
         const client2 = await MongoClient.connect(this.url2);

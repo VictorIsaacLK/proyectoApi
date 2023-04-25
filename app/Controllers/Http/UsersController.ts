@@ -75,7 +75,7 @@ export default class UsersController {
       user.telefono = telefono
       user.no_verificacion = numeroAleatorio
       await user.save()
-      const HOSTCORREO = process.env.HOST
+      const HOSTCORREO = process.env.HOSTCORREO
       const PORT = process.env.PORT
       const url =
         'https://' +

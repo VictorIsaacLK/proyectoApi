@@ -34,8 +34,6 @@ Route.group(() => {
   Route.get('/user/:id', 'UsersController.info')
   Route.get('/validarnumero/:url', 'UsersController.numerodeverificacionmovil').as('validarnumero');
   Route.post('/validaCode','UsersController.registrarsms')
-
-  
 })
 
 Route.group(() => {
@@ -59,6 +57,8 @@ Route.group(() => {
 Route.get('/sensores/info', 'SensoresController.obtenerValores');
 Route.get('/sensores', 'SensoresController.obtenerValoresSens');
 }).middleware('auth')
+
+Route.get('/status', 'UsersController.getStatus')
 
 
 

@@ -5,7 +5,7 @@ import Event from '@ioc:Adonis/Core/Event'
     
 
 export default class SensoresController {
-    url = 'mongodb+srv://root:2tCVgy$_DEa!ZYB@5b.y2llyqd.mongodb.net/?retryWrites=true&w=majority';
+    url = 'mongodb://54.175.50.139:27017/?directConnection=true';
     client = new MongoClient(this.url);
     dbName = 'VIDA';
 
@@ -42,37 +42,39 @@ export default class SensoresController {
   }
     
     
-    public async obtenerValoresSens({ response }: HttpContextContract) {
-      try {
-        const client = await MongoClient.connect(this.url);
-        const db = client.db(this.dbName);
-        const collection = db.collection('sensoresValue');
-    
-        const aggregationPipeline = [
-          { $sort: { fecha: -1 } },
-          {
-            $group: {
-              _id: "$Sensor.Clave",
-              sensor: { $first: "$Sensor" },
-              value: { $last: "$Value" },
-              fecha: { $last: "$Fecha" },
-            },
+  public async obtenerValoresSens({ response }: HttpContextContract) {
+    try {
+      await this.client.connect();
+      const db = this.client.db(this.dbName);
+      const collection = db.collection('sensoresValue');
+  
+      const aggregationPipeline = [
+        { $sort: { fecha: -1 } },
+        {
+          $group: {
+            _id: "$Sensor.Tipo",
+            sensor: { $first: "$Sensor" },
+            fecha: { $first: "$Fecha" },
+            value: { $last: "$Value" },
+            
           },
-          { $sort: { _id:-1 } }
-        ];
-    
-        const aggregationResult = await collection.aggregate(aggregationPipeline).toArray();
-    
-        return response.json(aggregationResult);
-      } catch (error) {
-        console.log(error);
-        return response.status(500).json({ msg: 'Error en conexion con MongoDB' });
-      }
+        },
+        { $sort: { fecha: -1 } }
+      ];
+  
+      const aggregationResult = (await collection.aggregate(aggregationPipeline).toArray())
+  
+      this.client.close();
+  
+      Event.emit('SensoresActualizados', aggregationResult);
+  
+      return response.json(aggregationResult);
+    } catch (error) {
+      console.log(error);
+      return response.status(500).json({ message: 'Error interno del servidor' });
     }
+  }
     
-    
-    
-
   public async obtenerValores({ response }: HttpContextContract) {
     try {
       await this.client.connect();
@@ -83,16 +85,16 @@ export default class SensoresController {
         { $sort: { fecha: -1 } },
         {
           $group: {
-            _id: "$Sensor.Clave",
+            _id: "$Sensor.Tipo",
             sensor: { $first: "$Sensor" },
-            value: { $first: "$Value" },
             fecha: { $first: "$Fecha" },
+            value: { $last: "$Value" },
           },
         },
         { $sort: { fecha: -1 } }
       ];
   
-      const aggregationResult = await collection.aggregate(aggregationPipeline).toArray();
+      const aggregationResult = (await collection.aggregate(aggregationPipeline).toArray())
   
       this.client.close();
   

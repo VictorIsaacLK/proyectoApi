@@ -5,8 +5,8 @@ import Event from '@ioc:Adonis/Core/Event'
     
 
 export default class SensoresController {
-    url = 'mongodb://54.175.50.139:27017/?directConnection=true';
-    url2 = 'mongodb://54.175.50.139:27018/?directConnection=true';
+    url = 'mongodb://54.174.208.18:27017/?directConnection=true';
+    url2 = 'mongodb://54.174.208.18:27018/?directConnection=true';
     client = new MongoClient(this.url);
     dbName = 'VIDA';
    
